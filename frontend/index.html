@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#142d2a">
   <title>Entre líneas · Laboratorio de chat</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="connection.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -43,18 +44,19 @@
               </div>
             </fieldset>
             <div class="endpoint-box"><span>ENDPOINT</span><output id="endpoint" aria-live="polite">ws://localhost:8000/ws/tu-nombre</output></div>
-            <button class="primary-button" type="submit">Guardar configuración <span aria-hidden="true">→</span></button>
-            <p id="config-status" class="form-status" role="status" aria-live="polite">La conexión al chat estará disponible en la siguiente entrega.</p>
+            <button id="connect-button" class="primary-button" type="submit">Conectar al servidor →</button>
+            <button id="disconnect-button" class="secondary-button" type="button" hidden>Desconectar</button>
+            <p id="config-status" class="form-status" role="status" aria-live="polite">Configura tu instancia para conectar al servidor.</p>
           </form>
         </aside>
 
         <section class="chat card" aria-labelledby="chat-title">
-          <header class="chat-header"><div><p class="eyebrow">ESPACIO COMPARTIDO</p><h2 id="chat-title">Sala del laboratorio</h2></div><span class="status-badge"><span aria-hidden="true"></span>Sin conexión</span></header>
+          <header class="chat-header"><div><p class="eyebrow">ESPACIO COMPARTIDO</p><h2 id="chat-title">Sala del laboratorio</h2></div><span id="connection-badge" class="status-badge" role="status"><span aria-hidden="true"></span><span id="connection-label">Sin conexión</span></span></header>
           <div class="message-area" id="messages" role="log" aria-label="Mensajes de la sala" aria-live="polite">
             <div class="empty-state"><div class="empty-icon" aria-hidden="true">“</div><h3>Todo empieza con un hola.</h3><p>Aquí aparecerá la conversación cuando conectes tu instancia al servidor.</p><span class="empty-tag">Abre otra ventana para simular otro usuario</span></div>
           </div>
           <div class="composer"><label class="sr-only" for="message">Mensaje</label><textarea id="message" rows="1" placeholder="Tu próximo mensaje empieza aquí…" disabled></textarea><button type="button" class="send-button" disabled aria-label="Enviar mensaje">↑</button></div>
-          <p class="composer-hint">El envío se habilitará al establecer una conexión.</p>
+          <p class="composer-hint">El envío y la recepción de mensajes se incorporan en la entrega 3.</p>
         </section>
       </div>
 
