@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142d2a">
+  <title>Entre líneas · Laboratorio de chat</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Entre líneas, inicio"><span class="brand-icon" aria-hidden="true">↔</span> entre líneas<span class="brand-dot">.</span></a>
+      <span class="course-label">CIBERSEGURIDAD <span>/</span> LAB 01</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">UN CHAT. DOS FORMAS DE VIAJAR.</p>
+        <h1 id="page-title">La conversación es tuya.<br><span>Observa cómo viaja.</span></h1>
+        <p>Explora la diferencia entre texto plano y transporte cifrado en un laboratorio de comunicación en tiempo real.</p>
+      </section>
+
+      <div class="workspace">
+        <aside class="settings card" aria-labelledby="settings-title">
+          <div class="section-heading"><span class="step">01</span><h2 id="settings-title">Tu conexión</h2></div>
+          <p class="muted">Prepara tu identidad y el servidor del laboratorio.</p>
+          <form id="connection-form">
+            <label for="username">Nombre de usuario</label>
+            <input id="username" name="username" placeholder="Ej. Alejandra" maxlength="32" required autocomplete="nickname" aria-describedby="username-hint">
+            <small id="username-hint">Usa un nombre distinto en cada instancia.</small>
+
+            <label for="server">Dirección del servidor</label>
+            <input id="server" name="server" value="localhost" placeholder="localhost o 192.168.1.10" required spellcheck="false" autocapitalize="none" aria-describedby="server-hint">
+            <small id="server-hint">Solo el host o IP, sin protocolo ni puerto.</small>
+
+            <fieldset>
+              <legend>Transporte</legend>
+              <div class="transport-options">
+                <label class="transport-option"><input type="radio" name="transport" value="ws" checked><span><strong>Texto plano</strong><small>WS · puerto 8000</small></span><span class="mode-symbol" aria-hidden="true">↗</span></label>
+                <label class="transport-option"><input type="radio" name="transport" value="wss"><span><strong>Cifrado TLS</strong><small>WSS · puerto 8443</small></span><span class="mode-symbol" aria-hidden="true">◇</span></label>
+              </div>
+            </fieldset>
+            <div class="endpoint-box"><span>ENDPOINT</span><output id="endpoint" aria-live="polite">ws://localhost:8000/ws/tu-nombre</output></div>
+            <button class="primary-button" type="submit">Guardar configuración <span aria-hidden="true">→</span></button>
+            <p id="config-status" class="form-status" role="status" aria-live="polite">La conexión al chat estará disponible en la siguiente entrega.</p>
+          </form>
+        </aside>
+
+        <section class="chat card" aria-labelledby="chat-title">
+          <header class="chat-header"><div><p class="eyebrow">ESPACIO COMPARTIDO</p><h2 id="chat-title">Sala del laboratorio</h2></div><span class="status-badge"><span aria-hidden="true"></span>Sin conexión</span></header>
+          <div class="message-area" id="messages" role="log" aria-label="Mensajes de la sala" aria-live="polite">
+            <div class="empty-state"><div class="empty-icon" aria-hidden="true">“</div><h3>Todo empieza con un hola.</h3><p>Aquí aparecerá la conversación cuando conectes tu instancia al servidor.</p><span class="empty-tag">Abre otra ventana para simular otro usuario</span></div>
+          </div>
+          <div class="composer"><label class="sr-only" for="message">Mensaje</label><textarea id="message" rows="1" placeholder="Tu próximo mensaje empieza aquí…" disabled></textarea><button type="button" class="send-button" disabled aria-label="Enviar mensaje">↑</button></div>
+          <p class="composer-hint">El envío se habilitará al establecer una conexión.</p>
+        </section>
+      </div>
+
+      <section class="lab-note" aria-labelledby="lab-title"><span class="note-icon" aria-hidden="true">⌁</span><div><h2 id="lab-title">De la conversación a los paquetes</h2><p>En Wireshark, compara <code>tcp.port == 8000</code> con <code>tcp.port == 8443</code>. Para conversar, ambas instancias deben usar el mismo servidor y transporte.</p></div><span class="lab-label">OBSERVA · COMPARA · EXPLICA</span></section>
+    </main>
+    <footer><span>Entre líneas / Laboratorio de redes</span><span>Aprender también es mirar por dentro.</span></footer>
+  </div>
+</body>
+</html>
