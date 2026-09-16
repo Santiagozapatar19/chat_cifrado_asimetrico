@@ -17,11 +17,13 @@ const messageForm = document.querySelector('#message-form');
 const messageInput = document.querySelector('#message');
 const sendButton = document.querySelector('.send-button');
 const messageStatus = document.querySelector('#message-status');
+const messageCount = document.querySelector('#message-count');
 const messages = new MessageList(document.querySelector('#message-list'), document.querySelector('.empty-state'));
 
 function updateComposer() {
   messageInput.disabled = connectionState !== 'connected';
-  sendButton.disabled = messageInput.disabled || !messageInput.value.trim();
+  sendButton.disabled = messageInput.disabled || !messageInput.value.trim() || messageInput.value.length > 2000;
+  messageCount.textContent = `${messageInput.value.length}/2000 caracteres`;
 }
 
 function renderConnectionState(state, message) {
@@ -47,6 +49,7 @@ function renderConnectionState(state, message) {
     error: 'Error de conexión',
   }[state];
   statusOutput.dataset.state = state === 'connected' ? 'success' : state;
+  statusOutput.setAttribute('role', state === 'error' ? 'alert' : 'status');
   statusOutput.textContent = state === 'connected'
     ? `Conectado como ${activeConfig.username}. ${activeConfig.transport === 'wss' ? 'Transporte cifrado con TLS.' : 'Transporte sin cifrar.'}` : message;
   emptyTitle.textContent = state === 'connected' ? 'Tu instancia está conectada.' : 'Todo empieza con un hola.';
@@ -69,7 +72,7 @@ function readConfiguration() {
 
 function validateConfiguration() {
   const { username, host } = readConfiguration();
-  usernameInput.setCustomValidity(username && !/[\/:\u0000-\u001f]/.test(username)
+  usernameInput.setCustomValidity(username && !/[\/:\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/.test(username)
     ? '' : 'Escribe un nombre sin barras, dos puntos ni caracteres de control.');
   // Hosts DNS/IPv4 o IPv6 entre corchetes. El puerto lo determina el transporte.
   const validHost = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?|\[[a-fA-F0-9:]+\])$/.test(host);
@@ -92,6 +95,7 @@ function updatePreview() {
     : 'Texto plano: el contenido puede inspeccionarse en Wireshark. Todos los participantes deben usar WS.';
   if (connectionState === 'connected' || connectionState === 'connecting') return;
   statusOutput.dataset.state = '';
+  statusOutput.setAttribute('role', 'status');
   statusOutput.textContent = 'Configura tu instancia para conectar al servidor.';
 }
 
@@ -113,10 +117,16 @@ form.addEventListener('submit', (event) => {
   connection.connect(activeConfig.endpoint);
 });
 
-disconnectButton.addEventListener('click', () => connection.disconnect());
+disconnectButton.addEventListener('click', () => {
+  connection.disconnect();
+  connectButton.focus();
+});
 window.addEventListener('pagehide', () => connection.disconnect());
 
-messageInput.addEventListener('input', updateComposer);
+messageInput.addEventListener('input', () => {
+  updateComposer();
+  messageStatus.textContent = 'Enter para enviar · Shift + Enter para una nueva línea.';
+});
 messageInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
     event.preventDefault();
@@ -127,6 +137,10 @@ messageForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const text = messageInput.value;
   if (!text.trim()) return;
+  if (text.length > 2000) {
+    messageStatus.textContent = 'El mensaje supera los 2000 caracteres. Acórtalo para enviarlo.';
+    return;
+  }
   if (!connection.send(text)) {
     messageStatus.textContent = 'No se pudo enviar. Tu borrador se conserva; revisa la conexión.';
     return;

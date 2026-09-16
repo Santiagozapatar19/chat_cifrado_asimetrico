@@ -10,10 +10,12 @@ Desde la raíz del repositorio:
 python -m http.server 5173 --bind 127.0.0.1 --directory frontend
 ```
 
-Abrir http://localhost:5173. La entrega 4 permite conectar, enviar y recibir
+Abrir http://localhost:5173. La entrega 5 permite conectar, enviar y recibir
 mensajes de texto entre instancias del mismo servidor y transporte.
 La configuración permanece en el formulario mientras la página esté abierta;
-no se almacena al recargar. El historial vive solo en la página y se pierde al recargar.
+no se almacena al recargar. El historial conserva los últimos 200 mensajes solo en
+la página y se pierde al recargar. El límite por mensaje enviado es de 2000 caracteres.
+Los mensajes externos de más de 10000 caracteres se recortan solo para mostrarlos.
 
 ## Partes de la interfaz
 
@@ -60,6 +62,14 @@ Ambas instancias deben cambiar al mismo modo: los servidores WS y WSS no compart
 la lista de conexiones. El panel "Preparar una conexión TLS" ayuda a revisar el
 servidor y explica la confianza del certificado. No se desactiva la validación TLS.
 
+## Lectura y accesibilidad
+
+El historial se puede recorrer con teclado. Si estás leyendo mensajes anteriores,
+los mensajes nuevos no te llevan al final: aparece un botón para verlos. El scroll
+automático mueve solo el panel del chat. Los estados incluyen texto además de color,
+hay foco visible y los errores de conexión se anuncian como alertas. Los borradores
+se conservan tras errores y cambios de transporte; no se guardan al cerrar la página.
+
 Verificaciones sin dependencias adicionales:
 
 ```sh
@@ -102,8 +112,8 @@ Se conserva intacto. Los comandos de instalación directa están en el README ra
 1. **Tú:** base visual responsive y configuración validada.
 2. **Tú:** conexión WebSocket, estados y desconexión.
 3. **Lasso:** envío y recepción, mensajes propios y ajenos, historial de sesión.
-4. **Lasso:** cambio WS/WSS, reconexión y orientación de certificados (esta entrega).
-5. **Salazar:** errores, accesibilidad y pulido de la experiencia.
+4. **Lasso:** cambio WS/WSS, reconexión y orientación de certificados.
+5. **Salazar:** errores, accesibilidad y pulido de la experiencia (esta entrega).
 6. **Salazar:** pruebas integrales, guía Wireshark y guion de video en inglés.
 
 Los responsables indican cómo repartir el trabajo; no se suplanta la autoría Git.

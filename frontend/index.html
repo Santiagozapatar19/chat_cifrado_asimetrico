@@ -17,7 +17,7 @@
       <span class="course-label">CIBERSEGURIDAD <span>/</span> LAB 01</span>
     </header>
 
-    <main>
+    <main id="main-content">
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">UN CHAT. DOS FORMAS DE VIAJAR.</p>
         <h1 id="page-title">La conversación es tuya.<br><span>Observa cómo viaja.</span></h1>
@@ -61,11 +61,14 @@
 
         <section class="chat card" aria-labelledby="chat-title">
           <header class="chat-header"><div><p class="eyebrow">ESPACIO COMPARTIDO</p><h2 id="chat-title">Sala del laboratorio</h2></div><span id="connection-badge" class="status-badge" role="status"><span aria-hidden="true"></span><span id="connection-label">Sin conexión</span></span></header>
-          <div class="message-area" id="messages">
+          <p id="history-note" class="history-note">Historial local · hasta 200 mensajes · se borra al recargar</p>
+          <div class="message-area" id="messages" tabindex="0" role="region" aria-label="Historial de la conversación">
             <div class="empty-state"><div class="empty-icon" aria-hidden="true">“</div><h3>Todo empieza con un hola.</h3><p>Aquí aparecerá la conversación cuando conectes tu instancia al servidor.</p><span class="empty-tag">Abre otra ventana para simular otro usuario</span></div>
             <ol id="message-list" class="message-list" role="log" aria-label="Mensajes de la sala" aria-live="polite" aria-relevant="additions" hidden></ol>
           </div>
-          <form id="message-form" class="composer"><label class="sr-only" for="message">Mensaje</label><textarea id="message" rows="2" placeholder="Tu próximo mensaje empieza aquí…" disabled></textarea><button type="submit" class="send-button" disabled aria-label="Enviar mensaje">↑</button></form>
+          <button id="new-messages" class="new-messages" type="button" hidden>Ver mensajes nuevos ↓</button>
+          <form id="message-form" class="composer"><label class="sr-only" for="message">Mensaje</label><textarea id="message" rows="2" maxlength="2000" aria-describedby="message-status message-count" placeholder="Tu próximo mensaje empieza aquí…" disabled></textarea><button type="submit" class="send-button" disabled aria-label="Enviar mensaje">↑</button></form>
+          <span id="message-count" class="message-count">0/2000 caracteres</span>
           <p id="message-status" class="composer-hint" role="status">Conecta tu instancia para escribir un mensaje.</p>
         </section>
       </div>
