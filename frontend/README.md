@@ -10,7 +10,7 @@ Desde la raíz del repositorio:
 python -m http.server 5173 --bind 127.0.0.1 --directory frontend
 ```
 
-Abrir http://localhost:5173. La entrega 5 permite conectar, enviar y recibir
+Abrir http://localhost:5173. La entrega final permite conectar, enviar y recibir
 mensajes de texto entre instancias del mismo servidor y transporte.
 La configuración permanece en el formulario mientras la página esté abierta;
 no se almacena al recargar. El historial conserva los últimos 200 mensajes solo en
@@ -75,8 +75,24 @@ Verificaciones sin dependencias adicionales:
 ```sh
 node --check frontend/app.js
 node --check frontend/connection.js
-node --test frontend/test/connection.test.cjs
+node --check frontend/messages.js
+node --test frontend/test/connection.test.cjs frontend/test/messages.test.cjs
 ```
+
+Con Node 22 o posterior y el servidor WS activo:
+
+```sh
+node frontend/test/integration.cjs
+```
+
+Para WSS, establecer `CHAT_TEST_URL=wss://localhost:8443`. Si el laboratorio usa
+un certificado privado, `NODE_EXTRA_CA_CERTS` debe apuntar al PEM confiable antes
+de arrancar Node. Esto agrega confianza solo al proceso de prueba; no deshabilita
+la verificación ni configura la confianza del navegador.
+
+- [Guía de demostración y Wireshark](docs/DEMO.md).
+- [Guion del video en inglés](docs/VIDEO_SCRIPT_EN.md).
+- [Resultados y lista de comprobación](docs/VERIFICATION.md).
 
 ## Contrato del backend (consultado, sin cambios)
 
@@ -113,7 +129,7 @@ Se conserva intacto. Los comandos de instalación directa están en el README ra
 2. **Tú:** conexión WebSocket, estados y desconexión.
 3. **Lasso:** envío y recepción, mensajes propios y ajenos, historial de sesión.
 4. **Lasso:** cambio WS/WSS, reconexión y orientación de certificados.
-5. **Salazar:** errores, accesibilidad y pulido de la experiencia (esta entrega).
-6. **Salazar:** pruebas integrales, guía Wireshark y guion de video en inglés.
+5. **Salazar:** errores, accesibilidad y pulido de la experiencia.
+6. **Salazar:** pruebas integrales, guía Wireshark y guion de video en inglés (esta entrega).
 
 Los responsables indican cómo repartir el trabajo; no se suplanta la autoría Git.

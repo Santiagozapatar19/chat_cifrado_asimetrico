@@ -5,14 +5,17 @@ const { readFileSync } = require('node:fs');
 const { runInNewContext } = require('node:vm');
 const source = readFileSync(require('node:path').join(__dirname, '../connection.js'), 'utf8');
 
-function setup() {
+function setup(protocol = 'http:') {
   const sockets = [];
   const states = [];
+  const received = [];
   const timers = new Map();
   let timerId = 0;
   class FakeSocket extends EventTarget {
     static CLOSING = 2;
-    constructor(url) { super(); this.url = url; this.readyState = 0; sockets.push(this); }
+    static OPEN = 1;
+    constructor(url) { super(); this.url = url; this.readyState = 0; this.sent = []; sockets.push(this); }
+    send(text) { this.sent.push(text); }
     close() { this.readyState = 3; }
     emit(type, code = 1006) {
       if (type === 'open') this.readyState = 1;
@@ -20,14 +23,16 @@ function setup() {
       event.code = code;
       this.dispatchEvent(event);
     }
+    receive(data) { const event = new Event('message'); event.data = data; this.dispatchEvent(event); }
   }
   const Connection = runInNewContext(`${source}\nChatConnection`, {
     WebSocket: FakeSocket,
+    location: { protocol },
     setTimeout: (callback) => { timers.set(++timerId, callback); return timerId; },
     clearTimeout: (id) => timers.delete(id),
   });
-  const connection = new Connection((state, message) => states.push({ state, message }));
-  return { connection, sockets, states, timers };
+  const connection = new Connection((state, message) => states.push({ state, message }), 10000, (text) => received.push(text));
+  return { connection, sockets, states, timers, received };
 }
 
 test('conecta una sola vez y limpia el temporizador al abrir', () => {
@@ -85,4 +90,35 @@ test('el cierre remoto libera el socket y permite volver a conectar', () => {
   assert.match(states.at(-1).message, /1001/);
   connection.connect('ws://localhost:8000/ws/Alice');
   assert.equal(sockets.length, 2);
+});
+
+test('envía solo con socket abierto y devuelve false ante fallo de envío', () => {
+  const { connection, sockets } = setup();
+  assert.equal(connection.send('hola'), false);
+  connection.connect('ws://localhost:8000/ws/Alice');
+  assert.equal(connection.send('hola'), false);
+  sockets[0].emit('open');
+  assert.equal(connection.send('hola 👋\nsegunda línea'), true);
+  assert.deepEqual(sockets[0].sent, ['hola 👋\nsegunda línea']);
+  sockets[0].send = () => { throw new Error('Socket cerrado'); };
+  assert.equal(connection.send('borrador'), false);
+});
+
+test('no entrega mensajes de sockets anteriores ni contenido binario', () => {
+  const { connection, sockets, received } = setup();
+  connection.connect('ws://localhost:8000/ws/Alice');
+  sockets[0].emit('open');
+  sockets[0].receive('Bob: hola');
+  sockets[0].receive(new Uint8Array([1]));
+  connection.disconnect();
+  sockets[0].receive('Bob: antiguo');
+  assert.deepEqual(received, ['Bob: hola']);
+});
+
+test('informa sobre contenido mixto antes de intentar WS desde HTTPS', () => {
+  const { connection, sockets, states } = setup('https:');
+  connection.connect('ws://localhost:8000/ws/Alice');
+  assert.equal(sockets.length, 0);
+  assert.equal(states.at(-1).state, 'error');
+  assert.match(states.at(-1).message, /HTTPS/);
 });
