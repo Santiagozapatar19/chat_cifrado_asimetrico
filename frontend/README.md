@@ -10,7 +10,7 @@ Desde la raíz del repositorio:
 python -m http.server 5173 --bind 127.0.0.1 --directory frontend
 ```
 
-Abrir http://localhost:5173. La entrega 3 permite conectar, enviar y recibir
+Abrir http://localhost:5173. La entrega 4 permite conectar, enviar y recibir
 mensajes de texto entre instancias del mismo servidor y transporte.
 La configuración permanece en el formulario mientras la página esté abierta;
 no se almacena al recargar. El historial vive solo en la página y se pierde al recargar.
@@ -47,6 +47,18 @@ el servidor no envía eco al emisor. "Enviado al socket" no garantiza recepción
 el backend no tiene confirmaciones. La conexión se cierra
 al abandonar la página y no se reconecta automáticamente. El navegador no informa
 la causa exacta de los errores WebSocket; las indicaciones son posibles comprobaciones.
+
+## Cambiar el transporte durante la sesión
+
+Con la conexión activa, seleccionar Texto plano o Cifrado TLS cierra el socket
+anterior y abre el nuevo. El borrador y el historial local se conservan; cada
+mensaje indica el transporte con el que fue enviado o recibido. Durante la
+conexión los controles se bloquean; se puede cancelar. Si falla, se puede cambiar
+el modo y pulsar Conectar de nuevo. No hay reenvío automático de mensajes.
+
+Ambas instancias deben cambiar al mismo modo: los servidores WS y WSS no comparten
+la lista de conexiones. El panel "Preparar una conexión TLS" ayuda a revisar el
+servidor y explica la confianza del certificado. No se desactiva la validación TLS.
 
 Verificaciones sin dependencias adicionales:
 
@@ -89,8 +101,8 @@ Se conserva intacto. Los comandos de instalación directa están en el README ra
 
 1. **Tú:** base visual responsive y configuración validada.
 2. **Tú:** conexión WebSocket, estados y desconexión.
-3. **Lasso:** envío y recepción, mensajes propios y ajenos, historial de sesión (esta entrega).
-4. **Lasso:** cambio WS/WSS, reconexión y orientación de certificados.
+3. **Lasso:** envío y recepción, mensajes propios y ajenos, historial de sesión.
+4. **Lasso:** cambio WS/WSS, reconexión y orientación de certificados (esta entrega).
 5. **Salazar:** errores, accesibilidad y pulido de la experiencia.
 6. **Salazar:** pruebas integrales, guía Wireshark y guion de video en inglés.
 

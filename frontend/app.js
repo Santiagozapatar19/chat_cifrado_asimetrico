@@ -31,7 +31,9 @@ function renderConnectionState(state, message) {
     ? 'Enter para enviar · Shift + Enter para una nueva línea.'
     : 'Conecta tu instancia para escribir un mensaje.';
   const busy = state === 'connecting' || state === 'connected';
-  configInputs.forEach((input) => { input.disabled = busy; });
+  configInputs.forEach((input) => {
+    input.disabled = input.name === 'transport' ? state === 'connecting' : busy;
+  });
   connectButton.disabled = busy;
   connectButton.textContent = state === 'connecting' ? 'Conectando…'
     : state === 'connected' ? 'Conexión activa' : 'Conectar al servidor →';
@@ -58,7 +60,7 @@ const connection = new ChatConnection(renderConnectionState, 10000, (raw) => {
 });
 
 function readConfiguration() {
-  const transport = new FormData(form).get('transport');
+  const transport = form.querySelector('input[name="transport"]:checked').value;
   const username = usernameInput.value.trim();
   const host = serverInput.value.trim();
   const port = transport === 'wss' ? '8443' : '8000';
@@ -82,11 +84,26 @@ function updatePreview() {
   endpointOutput.textContent = serverInput.validity.valid
     ? `${config.transport}://${config.host}:${config.transport === 'wss' ? '8443' : '8000'}/ws/${encodeURIComponent(config.username || 'tu-nombre')}`
     : 'Revisa la dirección del servidor';
+  const tlsLink = document.querySelector('#tls-server-link');
+  tlsLink.hidden = !serverInput.validity.valid;
+  if (serverInput.validity.valid) tlsLink.href = `https://${config.host}:8443/`;
+  document.querySelector('#transport-help').textContent = config.transport === 'wss'
+    ? 'TLS cifra el transporte. Todos los participantes deben usar WSS y un certificado confiable.'
+    : 'Texto plano: el contenido puede inspeccionarse en Wireshark. Todos los participantes deben usar WS.';
+  if (connectionState === 'connected' || connectionState === 'connecting') return;
   statusOutput.dataset.state = '';
   statusOutput.textContent = 'Configura tu instancia para conectar al servidor.';
 }
 
 form.addEventListener('input', updatePreview);
+form.addEventListener('change', (event) => {
+  if (event.target.name !== 'transport' || connectionState !== 'connected') return;
+  const nextConfig = readConfiguration();
+  // Dos procesos de Uvicorn implican dos salas. Conservar historial y borrador.
+  connection.disconnect();
+  activeConfig = nextConfig;
+  connection.connect(activeConfig.endpoint);
+});
 form.addEventListener('submit', (event) => {
   event.preventDefault();
   validateConfiguration();

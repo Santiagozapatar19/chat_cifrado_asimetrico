@@ -10,6 +10,10 @@ class ChatConnection {
 
   connect(endpoint) {
     if (this.socket) return;
+    if (typeof location !== 'undefined' && location.protocol === 'https:' && endpoint.startsWith('ws:')) {
+      this.onStateChange('error', 'Para probar WS, abre este frontend por HTTP. Una página HTTPS puede bloquear conexiones sin cifrar.');
+      return;
+    }
     this.onStateChange('connecting', 'Abriendo conexión con el servidor…');
     let socket;
     try {

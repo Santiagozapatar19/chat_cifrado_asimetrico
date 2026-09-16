@@ -44,11 +44,19 @@
                 <label class="transport-option"><input type="radio" name="transport" value="wss"><span><strong>Cifrado TLS</strong><small>WSS · puerto 8443</small></span><span class="mode-symbol" aria-hidden="true">◇</span></label>
               </div>
             </fieldset>
+            <p id="transport-help" class="transport-help">Texto plano: el contenido puede inspeccionarse en Wireshark.</p>
+            <small>Cambiar de modo reconecta a otra sala. Coordina el cambio con los demás usuarios.</small>
             <div class="endpoint-box"><span>ENDPOINT</span><output id="endpoint" aria-live="polite">ws://localhost:8000/ws/tu-nombre</output></div>
             <button id="connect-button" class="primary-button" type="submit">Conectar al servidor →</button>
             <button id="disconnect-button" class="secondary-button" type="button" hidden>Desconectar</button>
             <p id="config-status" class="form-status" role="status" aria-live="polite">Configura tu instancia para conectar al servidor.</p>
           </form>
+          <details class="tls-help">
+            <summary>Preparar una conexión TLS</summary>
+            <p>El servidor debe estar activo en el puerto 8443 con un certificado válido para su dirección y confiable para este navegador. JavaScript no puede omitir esa validación.</p>
+            <a id="tls-server-link" href="https://localhost:8443/" target="_blank" rel="noopener noreferrer">Revisar servidor TLS (otra pestaña)</a>
+            <p>Una respuesta «Not Found» en la raíz es normal: el backend solo expone la ruta WebSocket. Si aparece un aviso de certificado, consulta la configuración del laboratorio.</p>
+          </details>
         </aside>
 
         <section class="chat card" aria-labelledby="chat-title">
