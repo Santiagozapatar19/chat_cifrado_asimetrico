@@ -7,6 +7,7 @@
   <title>Entre líneas · Laboratorio de chat</title>
   <link rel="stylesheet" href="styles.css">
   <script src="connection.js" defer></script>
+  <script src="messages.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -52,11 +53,12 @@
 
         <section class="chat card" aria-labelledby="chat-title">
           <header class="chat-header"><div><p class="eyebrow">ESPACIO COMPARTIDO</p><h2 id="chat-title">Sala del laboratorio</h2></div><span id="connection-badge" class="status-badge" role="status"><span aria-hidden="true"></span><span id="connection-label">Sin conexión</span></span></header>
-          <div class="message-area" id="messages" role="log" aria-label="Mensajes de la sala" aria-live="polite">
+          <div class="message-area" id="messages">
             <div class="empty-state"><div class="empty-icon" aria-hidden="true">“</div><h3>Todo empieza con un hola.</h3><p>Aquí aparecerá la conversación cuando conectes tu instancia al servidor.</p><span class="empty-tag">Abre otra ventana para simular otro usuario</span></div>
+            <ol id="message-list" class="message-list" role="log" aria-label="Mensajes de la sala" aria-live="polite" aria-relevant="additions" hidden></ol>
           </div>
-          <div class="composer"><label class="sr-only" for="message">Mensaje</label><textarea id="message" rows="1" placeholder="Tu próximo mensaje empieza aquí…" disabled></textarea><button type="button" class="send-button" disabled aria-label="Enviar mensaje">↑</button></div>
-          <p class="composer-hint">El envío y la recepción de mensajes se incorporan en la entrega 3.</p>
+          <form id="message-form" class="composer"><label class="sr-only" for="message">Mensaje</label><textarea id="message" rows="2" placeholder="Tu próximo mensaje empieza aquí…" disabled></textarea><button type="submit" class="send-button" disabled aria-label="Enviar mensaje">↑</button></form>
+          <p id="message-status" class="composer-hint" role="status">Conecta tu instancia para escribir un mensaje.</p>
         </section>
       </div>
 

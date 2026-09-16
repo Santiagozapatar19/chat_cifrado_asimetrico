@@ -80,5 +80,16 @@ code { font-size: 10px; }
 footer { display: flex; justify-content: space-between; gap: 15px; padding: 24px 0; color: #7f897b; font-size: 10px; }
 :focus-visible { outline: 3px solid #7b9c53; outline-offset: 3px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+[hidden] { display: none !important; }
+.chat { min-width: 0; }
+.message-area { height: 390px; min-height: 280px; overflow-y: auto; align-content: start; }
+.message-area:has(.empty-state:not([hidden])) { align-content: center; }
+.message-list { list-style: none; padding: 0; margin: 0; width: 100%; display: flex; flex-direction: column; gap: 14px; }
+.message { align-self: flex-start; max-width: 88%; border: 1px solid var(--line); border-radius: 12px 12px 12px 3px; padding: 12px 15px; background: #fff; overflow-wrap: anywhere; }
+.own-message { align-self: flex-end; background: #edf5e3; border-color: #d7e4c6; border-radius: 12px 12px 3px 12px; }
+.message-author { font-size: 11px; font-weight: 700; }
+.message-body { white-space: pre-wrap; margin: 6px 0; font-size: 14px; }
+.message small { font-size: 10px; }
+.send-button:not(:disabled) { background: var(--ink); color: #fff; }
 @media (max-width: 850px) { .app-shell { padding: 0 24px; } .workspace { grid-template-columns: 290px minmax(0, 1fr); gap: 16px; } .settings { padding: 20px; } .chat-header { padding: 20px 16px; flex-wrap: wrap; } .lab-label { display: none; } }
 @media (max-width: 640px) { .app-shell { padding: 0 18px; } .topbar { height: 76px; } .brand { font-size: 20px; } .course-label { font-size: 8px; letter-spacing: 1px; } .course-label span { margin: 0 5px; } .intro { padding: 28px 0 24px; } h1 { letter-spacing: -1.1px; } .intro > p:last-child { font-size: 12px; } .workspace { grid-template-columns: 1fr; } .chat { min-height: 430px; } .chat-header { padding: 20px; } .composer { margin: 0 15px; } .lab-note { align-items: flex-start; padding: 16px; gap: 12px; } footer { flex-direction: column; gap: 5px; } }

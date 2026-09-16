@@ -12,8 +12,24 @@ const emptyTitle = document.querySelector('.empty-state h3');
 const emptyDescription = document.querySelector('.empty-state p');
 const configInputs = form.querySelectorAll('input');
 let activeConfig = null;
+let connectionState = 'disconnected';
+const messageForm = document.querySelector('#message-form');
+const messageInput = document.querySelector('#message');
+const sendButton = document.querySelector('.send-button');
+const messageStatus = document.querySelector('#message-status');
+const messages = new MessageList(document.querySelector('#message-list'), document.querySelector('.empty-state'));
+
+function updateComposer() {
+  messageInput.disabled = connectionState !== 'connected';
+  sendButton.disabled = messageInput.disabled || !messageInput.value.trim();
+}
 
 function renderConnectionState(state, message) {
+  connectionState = state;
+  updateComposer();
+  messageStatus.textContent = state === 'connected'
+    ? 'Enter para enviar · Shift + Enter para una nueva línea.'
+    : 'Conecta tu instancia para escribir un mensaje.';
   const busy = state === 'connecting' || state === 'connected';
   configInputs.forEach((input) => { input.disabled = busy; });
   connectButton.disabled = busy;
@@ -33,11 +49,13 @@ function renderConnectionState(state, message) {
     ? `Conectado como ${activeConfig.username}. ${activeConfig.transport === 'wss' ? 'Transporte cifrado con TLS.' : 'Transporte sin cifrar.'}` : message;
   emptyTitle.textContent = state === 'connected' ? 'Tu instancia está conectada.' : 'Todo empieza con un hola.';
   emptyDescription.textContent = state === 'connected'
-    ? 'La conexión está lista. La conversación se habilitará en la siguiente entrega.'
+    ? 'Escribe un mensaje. Para recibirlo, abre otra instancia en el mismo servidor y transporte.'
     : 'Conecta tu instancia al servidor para entrar a la sala del laboratorio.';
 }
 
-const connection = new ChatConnection(renderConnectionState);
+const connection = new ChatConnection(renderConnectionState, 10000, (raw) => {
+  messages.append({ ...parseIncomingMessage(raw), transport: activeConfig.transport });
+});
 
 function readConfiguration() {
   const transport = new FormData(form).get('transport');
@@ -80,5 +98,28 @@ form.addEventListener('submit', (event) => {
 
 disconnectButton.addEventListener('click', () => connection.disconnect());
 window.addEventListener('pagehide', () => connection.disconnect());
+
+messageInput.addEventListener('input', updateComposer);
+messageInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+    event.preventDefault();
+    messageForm.requestSubmit();
+  }
+});
+messageForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const text = messageInput.value;
+  if (!text.trim()) return;
+  if (!connection.send(text)) {
+    messageStatus.textContent = 'No se pudo enviar. Tu borrador se conserva; revisa la conexión.';
+    return;
+  }
+  // El backend no devuelve eco al emisor: renderizamos su mensaje localmente.
+  messages.append({ author: activeConfig.username, text, own: true, transport: activeConfig.transport });
+  messageInput.value = '';
+  updateComposer();
+  messageInput.focus();
+  messageStatus.textContent = 'Enviado al socket. El servidor no confirma la entrega al destinatario.';
+});
 
 updatePreview();

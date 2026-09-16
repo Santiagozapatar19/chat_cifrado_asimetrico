@@ -10,10 +10,10 @@ Desde la raíz del repositorio:
 python -m http.server 5173 --bind 127.0.0.1 --directory frontend
 ```
 
-Abrir http://localhost:5173. La entrega 2 permite configurar, abrir y cerrar una
-conexión WebSocket real. No envía ni presenta mensajes todavía (entrega 3).
+Abrir http://localhost:5173. La entrega 3 permite conectar, enviar y recibir
+mensajes de texto entre instancias del mismo servidor y transporte.
 La configuración permanece en el formulario mientras la página esté abierta;
-no se almacena al recargar. El chat vacío y el envío deshabilitado son intencionales.
+no se almacena al recargar. El historial vive solo en la página y se pierde al recargar.
 
 ## Partes de la interfaz
 
@@ -24,6 +24,8 @@ no se almacena al recargar. El chat vacío y el envío deshabilitado son intenci
   conexión. Usa `textContent` para mostrar entradas del usuario.
 - `connection.js`: administra un único WebSocket, los eventos `open`, `error` y
   `close`, cancelación y timeout de 10 segundos. Ignora eventos de sockets antiguos.
+- `messages.js`: interpreta el formato de texto del servidor y construye las
+  burbujas usando `textContent`, sin interpretar HTML enviado por otro usuario.
 
 ## Probar la conexión
 
@@ -39,7 +41,10 @@ python -m uvicorn main:app --host 127.0.0.1 --port 8000
 4. Con el servidor detenido, intentar conectar: debe aparecer un error y permitir reintentar.
 5. Si el servidor no responde, el intento termina a los 10 segundos.
 
-El botón para enviar sigue deshabilitado hasta la entrega 3. La conexión se cierra
+El envío se habilita cuando hay conexión y texto no vacío. Enter envía y
+Shift + Enter agrega una línea. Los mensajes propios se muestran localmente porque
+el servidor no envía eco al emisor. "Enviado al socket" no garantiza recepción:
+el backend no tiene confirmaciones. La conexión se cierra
 al abandonar la página y no se reconecta automáticamente. El navegador no informa
 la causa exacta de los errores WebSocket; las indicaciones son posibles comprobaciones.
 
@@ -83,8 +88,8 @@ Se conserva intacto. Los comandos de instalación directa están en el README ra
 ## Secuencia de commits
 
 1. **Tú:** base visual responsive y configuración validada.
-2. **Tú:** conexión WebSocket, estados y desconexión (esta entrega).
-3. **Lasso:** envío y recepción, mensajes propios y ajenos, historial de sesión.
+2. **Tú:** conexión WebSocket, estados y desconexión.
+3. **Lasso:** envío y recepción, mensajes propios y ajenos, historial de sesión (esta entrega).
 4. **Lasso:** cambio WS/WSS, reconexión y orientación de certificados.
 5. **Salazar:** errores, accesibilidad y pulido de la experiencia.
 6. **Salazar:** pruebas integrales, guía Wireshark y guion de video en inglés.

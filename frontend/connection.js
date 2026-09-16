@@ -1,10 +1,11 @@
 // Una sola conexión activa. Los eventos de conexiones anteriores se ignoran.
 class ChatConnection {
-  constructor(onStateChange, timeoutMs = 10000) {
+  constructor(onStateChange, timeoutMs = 10000, onMessage = () => {}) {
     this.onStateChange = onStateChange;
     this.timeoutMs = timeoutMs;
     this.socket = null;
     this.timer = null;
+    this.onMessage = onMessage;
   }
 
   connect(endpoint) {
@@ -18,6 +19,9 @@ class ChatConnection {
       return;
     }
     this.socket = socket;
+    socket.addEventListener('message', (event) => {
+      if (this.socket === socket && typeof event.data === 'string') this.onMessage(event.data);
+    });
 
     const fail = (message) => {
       if (this.socket !== socket) return;
@@ -43,6 +47,16 @@ class ChatConnection {
       if (this.socket !== socket) return;
       fail(`El servidor cerró la conexión (código ${event.code}). Puedes volver a conectar.`);
     });
+  }
+
+  send(text) {
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) return false;
+    try {
+      this.socket.send(text);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   release() {
