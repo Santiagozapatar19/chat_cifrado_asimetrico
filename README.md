@@ -78,6 +78,25 @@ python test/test_client_secure.py
 
 Cada script se conecta, envía un mensaje de prueba ("Hello Bob") y se mantiene abierto un momento para poder capturar el tráfico con Wireshark.
 
+##Instalación Frontend
+
+Abre **otra terminal**, ubícate en la **raíz del proyecto** —donde están `frontend/` y `backend/`— y ejecuta:
+
+```bash
+cd frontend
+python -m http.server 5173
+```
+
+Abre en el navegador:
+
+**http://localhost:5173**
+
+Si ya estás dentro de la carpeta `frontend/`, el comando equivalente es:
+
+```bash
+python -m http.server 5173
+```
+
 ## Analizar con Wireshark
 
 1. Capturar en la interfaz **loopback** (`Adapter for loopback traffic capture` en Windows, `lo`/`lo0` en Linux/Mac).
