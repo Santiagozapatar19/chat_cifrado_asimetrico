@@ -78,7 +78,7 @@ python test/test_client_secure.py
 
 Cada script se conecta, envía un mensaje de prueba ("Hello Bob") y se mantiene abierto un momento para poder capturar el tráfico con Wireshark.
 
-##Instalación Frontend
+## Instalación Frontend
 
 Abre **otra terminal**, ubícate en la **raíz del proyecto** —donde están `frontend/` y `backend/`— y ejecuta:
 
